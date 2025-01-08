@@ -2,6 +2,10 @@
 
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -41,7 +45,7 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = async (req,res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -71,11 +75,25 @@ export const login = async (req,res) => {
         success: false,
       });
     }
-    return res.status(201).json({
-      message: `Welcome back ${user.name} `,
-      error: false,
-      success: true,
+
+    //token
+
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "3d",
     });
+
+    return res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 24 * 3 * 60 * 60 * 1000,
+      })
+      .json({
+        message: `Welcome back ${user.name} `,
+        error: false,
+        success: true,
+      });
   } catch (error) {
     return res.status(500).json({
       message: error.message || error,
