@@ -32,5 +32,55 @@ export const register = async (req, res) => {
       error: false,
       success: true,
     });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const login = async (req,res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(403).json({
+        message: "All fields are required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(403).json({
+        message: "Incorrect email or password",
+        error: true,
+        success: false,
+      });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(403).json({
+        message: "Incorrect password",
+        error: true,
+        success: false,
+      });
+    }
+    return res.status(201).json({
+      message: `Welcome back ${user.name} `,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 };
