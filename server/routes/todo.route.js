@@ -7,12 +7,13 @@ import {
   getAllTodo,
   updateTodo,
 } from "../controllers/todo.controller.js";
+import isAuthenticated from "../middleware/isAuthenticated.js";
 
 const todoRouter = Router();
 
-todoRouter.post("/", createTodo);
-todoRouter.get("/", getAllTodo);
-todoRouter.put("/:id", updateTodo);
-todoRouter.delete("/:todoId", deleteTodo);
+todoRouter.post("/", isAuthenticated, createTodo);
+todoRouter.get("/",isAuthenticated, getAllTodo);
+todoRouter.put("/:id", isAuthenticated, updateTodo);
+todoRouter.delete("/:todoId", isAuthenticated, deleteTodo);
 
 export default todoRouter;

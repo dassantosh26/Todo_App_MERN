@@ -102,3 +102,21 @@ export const login = async (req, res) => {
     });
   }
 };
+
+export const logout = async(
+  _, res) => {
+  try {
+    //Here we are setting to empty string also maxAge to Zero to expiry immediately
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      message: "Logout Successfully",
+      success: true,
+      error: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
